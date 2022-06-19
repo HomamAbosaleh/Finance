@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Index
+{% endblock %}
+
+{% block notification %}
+    {% if status == "Bought" %}
+        <p id="status">Bought!<p>
+    {% elif status == "Sold" %}
+        <p id="status">Sold!</p>
+    {% elif status == "Registered" %}
+        <p id="status">Registered!</p>
+    {% endif %}
+{% endblock %}
+
+{% block main %}
+    <table>
+        <tr>
+            <th>Symbol</th>
+            <th>Name</th>
+            <th>Shares</th>
+            <th>Price</th>
+            <th>TOTAL</th>
+        </tr>
+        {% for row in rows %}
+        <tr id="body">
+            <td>{{ row['symbol'] }}</td>
+            <td>{{ prices[row['symbol']][1] }}</td>
+            <td>{{ row['share'] }}</td>
+            <td>${{ prices[row['symbol']][0] }}</td>
+            <td>${{ prices[row['symbol']][0] * row['share'] }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="4">CASH</td>
+            <td>${{ cash }}</td>
+        </tr>
+        <tr class="total">
+            <td colspan="4"></td>
+            <th>${{ TOTAL + cash }}</th>
+        </tr>
+    </table>
+{% endblock %}

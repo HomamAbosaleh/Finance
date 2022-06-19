@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Quote
+{% endblock %}
+
+{% block main %}
+{% if stock is not defined %}
+<form action="/quote" method="POST">
+    <div class="form-group">
+        <input required autofocus name="symbol" type="text" class="form-control" placeholder="Symbol">
+    </div>
+    <button type="submit" class="btn btn-primary">Quote</button>
+</form>
+{% else %}
+<p>A share of {{ stock['name'] }} ({{stock['symbol']}}) costs ${{ stock['price']}}.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    History
+{% endblock %}
+
+{% block main %}
+    <table>
+        <tr>
+            <th>Symbol</th>
+            <th>Shares</th>
+            <th>Price</th>
+            <th>Transacted</th>
+        </tr>
+        {% for history in histories %}
+        <tr id="body">
+            <td>{{ history['symbol'] }}</td>
+            {% if history['sold'] == 0 %}
+                <td>{{ history['share'] }}</td>
+            {% else %}
+                <td>-{{ history['share'] }}</td>
+            {% endif %}
+            <td>{{ history['price'] }}</td>
+            <td>{{ history['date'] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
