@@ -185,7 +185,7 @@ def sell():
             db.execute("UPDATE stocks SET share = ? WHERE (user_id = ? AND symbol = ?)", newStocks, session["user_id"], request.form.get("Selection-form"))
 
         # registring the sold shares
-        db.execute("INSERT INTO history (user_id, symbol, share, price,sold, date) VALUES (?, ?, ?, ?, 1, ?)", session["user_id"], request.form.get("Selection-form"), request.form.get("share"), lookup(request.form.get("Selection-form"))['price'], "{:%Y-%m-%d %H:%M:%2S}".format(datetime.now()))
+        db.execute("INSERT INTO history (user_id, symbol, share, price,sold, date) VALUES (?, ?, ?, ?, 1, ?)", session["user_id"], request.form.get("Selection-form"), request.form.get("share"), lookup(request.form.get("Selection-form"))['price'], datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
         # update the user's cash
         userCash = db.execute("SELECT cash FROM users WHERE user_id = ?", session["user_id"])[0]['cash']
@@ -209,14 +209,14 @@ def buy():
             price = float(stockInformation['price']) * float(request.form.get("shares"))
             userCash = db.execute("SELECT cash FROM users WHERE user_id = ?", session["user_id"])[0]['cash']
             if userCash >= price:
-                rows = db.execute("SELECT * FROM stocks WHERE symbol = ?", request.form.get("symbol"))
+                rows = db.execute("SELECT * FROM stocks WHERE (user_id = ? AND symbol = ?)", session["user_id"], request.form.get("symbol"))
                 if len(rows) == 0:
                     db.execute("INSERT INTO stocks (user_id, symbol, share) VALUES (?, ?, ?)", session["user_id"], request.form.get("symbol"), float(request.form.get("shares")))
-                    db.execute("INSERT INTO history (user_id, symbol, share, price, sold, date) VALUES (?, ?, ?, ?, 0, ?)", session["user_id"], request.form.get("symbol"), float(request.form.get("shares")), float(stockInformation['price']), "{:%Y-%m-%d %H:%M:%2S}".format(datetime.now()))
+                    db.execute("INSERT INTO history (user_id, symbol, share, price, sold, date) VALUES (?, ?, ?, ?, 0, ?)", session["user_id"], request.form.get("symbol"), float(request.form.get("shares")), float(stockInformation['price']), datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                 else:
                     existingShares = float(db.execute("SELECT share FROM stocks WHERE (user_id = ? AND symbol = ?)", session["user_id"], request.form.get("symbol"))[0]['share'])
                     db.execute("UPDATE stocks SET share = ? WHERE (user_id = ? AND symbol = ?)", existingShares + float(request.form.get("shares")), session["user_id"], request.form.get("symbol"))
-                    db.execute("INSERT INTO history (user_id, symbol, share, price, sold, date) VALUES (?, ?, ?, ?, 0, ?)", session["user_id"], request.form.get("symbol"), float(request.form.get("shares")), float(stockInformation['price']), "{:%Y-%m-%d %H:%M:%2S}".format(datetime.now()))
+                    db.execute("INSERT INTO history (user_id, symbol, share, price, sold, date) VALUES (?, ?, ?, ?, 0, ?)", session["user_id"], request.form.get("symbol"), float(request.form.get("shares")), float(stockInformation['price']), datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                 db.execute("UPDATE users SET cash = ? WHERE user_id = ?", (userCash - price), session["user_id"])
                 session['status'] = "Bought"
             else:
@@ -241,3 +241,10 @@ def errorhandler(e):
 # Listen for errors
 for code in default_exceptions:
     app.errorhandler(code)(errorhandler)
+
+
+
+
+
+if __name__ == "__main__":
+    app.run()
